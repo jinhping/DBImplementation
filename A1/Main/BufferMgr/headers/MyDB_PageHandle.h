@@ -3,6 +3,7 @@
 #define PAGE_HANDLE_H
 
 #include <memory>
+#include "MyDB_Page.h"
 
 // page handles are basically smart pointers
 using namespace std;
@@ -33,10 +34,13 @@ public:
 	// become unpinned.  
 	~MyDB_PageHandleBase ();
 
+	MyDB_PageHandleBase(shared_ptr<MyDB_Page> ptr);
+	
+	void unpinPage();
 	// FEEL FREE TO ADD ADDITIONAL PUBLIC METHODS
 
 private:
-
+	shared_ptr<MyDB_Page> page;
 	// YOUR CODE HERE
 };
 

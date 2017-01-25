@@ -4,8 +4,33 @@
 
 #include "MyDB_PageHandle.h"
 #include "MyDB_Table.h"
+#include <unordered_map>
+#include <set>
+#include <functional>
+#include <utility>
+#include <string>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 using namespace std;
+
+struct pageCompare{
+	bool operator()(const MyDB_Page* left, const MyDB_Page* right) const {return left->getLRUNumber() < right->getLRUNumber();}
+};
+
+struct pair_hash {
+    template <class T1, class T2>
+    std::size_t operator () (const std::pair<T1,T2> &p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+
+        // Mainly for demonstration purposes, i.e. works but is overly simple
+        // In the real world, use sth. like boost.hash_combine
+        return h1 ^ h2;  
+    }
+};
 
 class MyDB_BufferManager {
 
@@ -50,8 +75,29 @@ public:
 	// FEEL FREE TO ADD ADDITIONAL PUBLIC METHODS 
 
 private:
-
-	// YOUR STUFF HERE
+	char* buffer;
+	size_t pageSize;
+	size_t numPages;
+	string tempFile;
+	char* nextAvailable;
+	
+	size_t pageCount;
+	
+	int fd;
+	
+	void incrementPageCount(){ ++pageCount; ++LRUNumber;}
+	bool isBufferFilled() {return (nextAvailable - buffer) >= (pageSize*numPages);}
+	void* findNextAvailable();
+	
+	long LRUNumber;
+	set<MyDB_Page*, pageCompare> LRU;
+	using ID = pair<string, long>;
+	unordered_map<ID, MyDB_Page*, pair_hash> Lookup;
+	
+	
+	void touch(MyDB_Page*);
+	void evict(MyDB_Page*);
+	void openTempFile();
 
 };
 

@@ -6,13 +6,23 @@
 #include "MyDB_PageHandle.h"
 
 void *MyDB_PageHandleBase :: getBytes () {
-	return nullptr;
+	return page->getBytes();
 }
 
 void MyDB_PageHandleBase :: wroteBytes () {
+	page->wroteBytes();
+}
+
+void MyDB_PageHandleBase :: unpinPage(){
+	page->setPin(false);
 }
 
 MyDB_PageHandleBase :: ~MyDB_PageHandleBase () {
+	page->decrementRef();
+}
+
+MyDB_PageHandleBase :: MyDB_PageHandleBase(shared_ptr<MyDB_Page> ptr) : page(ptr) {
+	page->incrementRef();
 }
 
 #endif
