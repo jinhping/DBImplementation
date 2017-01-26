@@ -80,30 +80,25 @@ MyDB_BufferManager :: ~MyDB_BufferManager () {
 	for (auto it = LRU.begin(); it != LRU.end(); it++){
 		(*it)->writeBack();
 	}
-	
-	
 	free(buffer);
 	close(fd);
 }
 
 void* MyDB_BufferManager :: findNextAvailable(){
 	void* temp = nextAvailable;
-	//cout<<nextAvailable - buffer<<endl;
 	if (!isBufferFilled()){
 		nextAvailable += pageSize;
 	}
 	else{
 		auto evictPage = *LRU.begin();
+		cout<<"LRU SIZE: "<< LRU.size()<<endl;
 		while (evictPage->isPinned()){
-			cout<<"encounter pinned page"<<endl;
-			LRU.erase(LRU.begin());
-			evictPage->setLRUNumber(++LRUNumber);
-			LRU.insert(evictPage);
+			cout<<"encounter pinned page " << (evictPage->getKey()).first << " " << (evictPage->getKey()).second << " " << evictPage->getLRUNumber()<<endl;
+			touch(evictPage);
 			evictPage = *LRU.begin();
 		}
 		temp = (char*)evictPage->getBytes();
 		evict(evictPage);
-		//TODO: Implement this after implement LRU
 	}
 	cout<<temp<<endl;
 	return temp;
