@@ -91,13 +91,14 @@ private:
 	void* findNextAvailable();
 	
 	long LRUNumber;
-	set<PagePtr, pageCompare> LRU;
+	using lruset = set<PagePtr, pageCompare>;
+	lruset LRU;
 	using ID = pair<string, long>;
-	unordered_map<ID, PagePtr, pair_hash> Lookup;
+	unordered_map<ID, lruset::iterator, pair_hash> Lookup;
 	
 	
-	void touch(PagePtr);
-	void evict(PagePtr);
+	void touch(lruset::iterator);
+	void* evict();
 	void openTempFile();
 
 };

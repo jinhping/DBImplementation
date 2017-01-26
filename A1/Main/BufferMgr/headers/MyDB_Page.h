@@ -28,9 +28,9 @@ public:
 	}
 	
 	void decrementRef(){
-		cout<<"ref count: " << referenceCount<<endl;
 		if (--referenceCount == 0) {
 			setPin(false);
+			checkAndFree();
 		}
 	}
 	
@@ -39,7 +39,6 @@ public:
 	}
 	
 	void setPin(bool pin){
-		cout<<"set pin:" << pin<<endl;
 		pinned = pin;
 	}
 	

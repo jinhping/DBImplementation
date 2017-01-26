@@ -19,7 +19,6 @@ void MyDB_PageHandleBase :: unpinPage(){
 }
 
 MyDB_PageHandleBase :: ~MyDB_PageHandleBase () {
-	cout<<"destructor"<<endl;
 	page->decrementRef();
 }
 

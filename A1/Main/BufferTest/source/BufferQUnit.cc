@@ -143,7 +143,6 @@ int main () {
 				writeNums (answer, 64, i);
 			char *bytes = (char *) temp->getBytes ();
 			QUNIT_IS_EQUAL (string (answer), string (bytes));
-			//cout<<bytes<<endl;
 		}
 	}
 }
