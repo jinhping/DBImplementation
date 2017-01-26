@@ -26,7 +26,6 @@ void MyDB_Page::readPage(){
 }
 
 void MyDB_Page::writeBack(){
-	
 	if (fd){
 		write(fd, data, pageSize);
 	}

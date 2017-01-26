@@ -13,11 +13,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <iostream>
 
 using namespace std;
 
+using PagePtr = shared_ptr<MyDB_Page>;
+
 struct pageCompare{
-	bool operator()(const MyDB_Page* left, const MyDB_Page* right) const {return left->getLRUNumber() < right->getLRUNumber();}
+	bool operator()(const PagePtr left, const PagePtr right) const {return left->getLRUNumber() < right->getLRUNumber();}
 };
 
 struct pair_hash {
@@ -25,9 +28,7 @@ struct pair_hash {
     std::size_t operator () (const std::pair<T1,T2> &p) const {
         auto h1 = std::hash<T1>{}(p.first);
         auto h2 = std::hash<T2>{}(p.second);
-
-        // Mainly for demonstration purposes, i.e. works but is overly simple
-        // In the real world, use sth. like boost.hash_combine
+		
         return h1 ^ h2;  
     }
 };
@@ -90,13 +91,13 @@ private:
 	void* findNextAvailable();
 	
 	long LRUNumber;
-	set<MyDB_Page*, pageCompare> LRU;
+	set<PagePtr, pageCompare> LRU;
 	using ID = pair<string, long>;
-	unordered_map<ID, MyDB_Page*, pair_hash> Lookup;
+	unordered_map<ID, PagePtr, pair_hash> Lookup;
 	
 	
-	void touch(MyDB_Page*);
-	void evict(MyDB_Page*);
+	void touch(PagePtr);
+	void evict(PagePtr);
 	void openTempFile();
 
 };

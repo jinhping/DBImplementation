@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+#include <iostream>
 using namespace std;
 
 
@@ -28,8 +28,10 @@ public:
 	}
 	
 	void decrementRef(){
-		--referenceCount;
-		if (referenceCount == 0) pinned = false;
+		cout<<"ref count: " << referenceCount<<endl;
+		if (--referenceCount == 0) {
+			setPin(false);
+		}
 	}
 	
 	bool isPinned(){
@@ -37,6 +39,7 @@ public:
 	}
 	
 	void setPin(bool pin){
+		cout<<"set pin:" << pin<<endl;
 		pinned = pin;
 	}
 	
