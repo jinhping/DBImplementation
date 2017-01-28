@@ -19,7 +19,7 @@ MyDB_PageHandle MyDB_BufferManager :: getPage (MyDB_TablePtr tbptr, long i) {
 	else{
 		incrementPageCount();
 		auto pagePtr = make_shared<MyDB_Page>(tbptr->getStorageLoc(), i, pageSize, findNextAvailable(), false);
-		pagePtr->setLRUNumber(this->LRUNumber);
+		pagePtr->setLRUNumber(++LRUNumber);
 		auto info = LRU.insert(pagePtr);
 		Lookup.insert(make_pair(pagePtr->getKey(), info.first));
 		return make_shared<MyDB_PageHandleBase>(pagePtr);
@@ -29,7 +29,7 @@ MyDB_PageHandle MyDB_BufferManager :: getPage (MyDB_TablePtr tbptr, long i) {
 MyDB_PageHandle MyDB_BufferManager :: getPage () {
 	incrementPageCount();
 	auto pagePtr = make_shared<MyDB_Page>(tempFile, pageSize, findNextAvailable(), fd, false);
-	pagePtr->setLRUNumber(this->LRUNumber);
+	pagePtr->setLRUNumber(++LRUNumber);
 	auto info = LRU.insert(pagePtr);
 	Lookup.insert(make_pair(pagePtr->getKey(), info.first));
 	return make_shared<MyDB_PageHandleBase>(pagePtr);
@@ -47,7 +47,7 @@ MyDB_PageHandle MyDB_BufferManager :: getPinnedPage (MyDB_TablePtr tbptr, long i
 	else{
 		incrementPageCount();
 		auto pagePtr = make_shared<MyDB_Page>(tbptr->getStorageLoc(), i, pageSize, findNextAvailable(), true);
-		pagePtr->setLRUNumber(this->LRUNumber);
+		pagePtr->setLRUNumber(++LRUNumber);
 		auto info = LRU.insert(pagePtr);
 		Lookup.insert(make_pair(pagePtr->getKey(), info.first));
 		return make_shared<MyDB_PageHandleBase>(pagePtr);	
@@ -57,7 +57,7 @@ MyDB_PageHandle MyDB_BufferManager :: getPinnedPage (MyDB_TablePtr tbptr, long i
 MyDB_PageHandle MyDB_BufferManager :: getPinnedPage () {
 	incrementPageCount();
 	auto pagePtr = make_shared<MyDB_Page>(tempFile, pageSize, findNextAvailable(), fd, true);
-	pagePtr->setLRUNumber(this->LRUNumber);
+	pagePtr->setLRUNumber(++LRUNumber);
 	auto info = LRU.insert(pagePtr);
 	Lookup.insert(make_pair(pagePtr->getKey(), info.first));
 	return make_shared<MyDB_PageHandleBase>(pagePtr);	
@@ -91,6 +91,7 @@ void* MyDB_BufferManager :: findNextAvailable(){
 	}
 	else{
 		temp = (char*)evict();
+		//cout<<"evicted: " << (char*)temp<<endl ;
 	}
 	return temp;
 }
@@ -109,10 +110,9 @@ void* MyDB_BufferManager :: evict(){
 		evictPage++;
 	}
 	void* bufferLoc = (*evictPage)->getBytes();
-	
+	(*evictPage)->checkAndFree();
 	Lookup.erase((*evictPage)->getKey());
 	LRU.erase(evictPage);
-	(*evictPage)->checkAndFree();
 	return bufferLoc;
 }
 

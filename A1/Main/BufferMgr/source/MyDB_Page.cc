@@ -39,7 +39,8 @@ void MyDB_Page::writeBack(){
 }
 
 void MyDB_Page::checkAndFree(){
-	if (referenceCount==0 && !pinned && dirty){
+	if (dirty){
+		//cout<<"-------------------" << referenceCount << " " << (char*)data << endl;
 		writeBack();
 	}
 }

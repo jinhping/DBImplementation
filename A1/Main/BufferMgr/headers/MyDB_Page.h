@@ -21,7 +21,7 @@ public:
 	
 	MyDB_Page(string& loc, long i, size_t ps, void* mem, bool pin);
 	
-	~MyDB_Page(){};
+	~MyDB_Page(){ dirty = false;};
 	
 	void incrementRef(){
 		++referenceCount;
@@ -30,7 +30,7 @@ public:
 	void decrementRef(){
 		if (--referenceCount == 0) {
 			setPin(false);
-			checkAndFree();
+			//checkAndFree();
 		}
 	}
 	
@@ -45,7 +45,7 @@ public:
 	
 	void* getBytes(){
 		return data;
-	}
+	} 
 	
 	void wroteBytes(){
 		markDirty();
