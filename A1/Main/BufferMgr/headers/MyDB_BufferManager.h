@@ -19,6 +19,7 @@ using namespace std;
 
 using PagePtr = shared_ptr<MyDB_Page>;
 
+
 struct pageCompare{
 	bool operator()(const PagePtr left, const PagePtr right) const {return left->getLRUNumber() < right->getLRUNumber();}
 };
@@ -32,6 +33,9 @@ struct pair_hash {
         return h1 ^ h2;  
     }
 };
+
+using ID = pair<string, long>;
+using lruset = set<PagePtr, pageCompare>;
 
 class MyDB_BufferManager {
 
@@ -74,7 +78,13 @@ public:
 	~MyDB_BufferManager ();
 
 	// FEEL FREE TO ADD ADDITIONAL PUBLIC METHODS 
+	void* findNextAvailable();
+	
+	void reEnterLRU(shared_ptr<MyDB_Page> page);
 
+	void externTouch(ID key){
+		touch(Lookup[key]);
+	}
 private:
 	char* buffer;
 	size_t pageSize;
@@ -83,23 +93,24 @@ private:
 	char* nextAvailable;
 	
 	size_t pageCount;
-	
 	int fd;
-	
 	void incrementPageCount(){ ++pageCount; ++LRUNumber;}
 	bool isBufferFilled() {return (nextAvailable - buffer) >= (pageSize*numPages);}
-	void* findNextAvailable();
+
 	
 	long LRUNumber;
-	using lruset = set<PagePtr, pageCompare>;
+
 	lruset LRU;
-	using ID = pair<string, long>;
+	
 	unordered_map<ID, lruset::iterator, pair_hash> Lookup;
 	
 	
 	void touch(lruset::iterator);
 	void* evict();
 	void openTempFile();
+	MyDB_PageHandle makePage(string&, long, size_t, void*, bool);
+	
+	long numAnonymous;
 
 
 };

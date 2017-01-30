@@ -12,14 +12,13 @@
 using namespace std;
 
 
+class MyDB_BufferManager;
 
-class MyDB_Page{
+class MyDB_Page: public enable_shared_from_this<MyDB_Page>{
 	
 public:
 	
-	MyDB_Page(string& loc, size_t ps, void* mem, int fd, bool pin); //used for anonymous page construction
-	
-	MyDB_Page(string& loc, long i, size_t ps, void* mem, bool pin);
+	MyDB_Page(string& loc, long i, size_t ps, void* mem, MyDB_BufferManager* manager, bool pin);
 	
 	~MyDB_Page(){ dirty = false;};
 	
@@ -30,7 +29,6 @@ public:
 	void decrementRef(){
 		if (--referenceCount == 0) {
 			setPin(false);
-			//checkAndFree();
 		}
 	}
 	
@@ -43,9 +41,7 @@ public:
 	}
 	
 	
-	void* getBytes(){
-		return data;
-	} 
+	void* getBytes();
 	
 	void wroteBytes(){
 		markDirty();
@@ -54,6 +50,7 @@ public:
 	void readPage();
 	void writeBack();
 	void checkAndFree();
+	shared_ptr<MyDB_Page> getPtr() { return shared_from_this();}
 	
 	unsigned int getLRUNumber() const {return LRUNumber;}
 	void setLRUNumber(unsigned int n){LRUNumber = n;}
@@ -70,11 +67,13 @@ private:
 	unsigned int referenceCount;
 	unsigned int LRUNumber;
 	char* data;
-	int fd = 0;
 	
 	void markDirty(){
 		dirty = true;
 	}
+	
+	bool freed;
+	MyDB_BufferManager* manager;
 	
 };
 
