@@ -79,44 +79,71 @@ public:
 	// and any temporary files need to be deleted
 	~MyDB_BufferManager ();
 
-	// FEEL FREE TO ADD ADDITIONAL PUBLIC METHODS 
+	// return the next available buffer slot either by increasing the pointer or evicting the existing page 
 	void* findNextAvailable();
 	
+	// page can use this method to put itself in the LRU again
+	// in case that a page object still has handles exists but page content was evicted
 	void reEnterLRU(shared_ptr<MyDB_Page> page);
 
+	// page can use this method to touch itself in the LRU
 	void externTouch(ID key){
 		touch(Lookup[key]);
 	}
 	
+	// page can return the disk slot to buffer manager
 	void returnDiskSlot(long);
 private:
+
+	//essential elements for buffer manager
+	//such as pointer to buffer, page size and etc.
 	char* buffer;
 	size_t pageSize;
 	size_t numPages;
 	string tempFile;
+	
+	//pointer to the beginning of the next available slot in the buffer
 	char* nextAvailable;
 	
+	//how many pages we have allocated so far
 	size_t pageCount;
-	int fd;
-	void incrementPageCount(){ ++pageCount; ++LRUNumber;}
-	bool isBufferFilled() {return (nextAvailable - buffer) >= (pageSize*numPages);}
-
 	
+	//file descriptor for temp file
+	int fd;
+
+	//max number of anonymous pages in the memory so far
+	long numAnonymous;
+	
+	//LRU number
 	long LRUNumber;
 
+	//LRU and Lookup table
 	lruset LRU;
-	
 	unordered_map<ID, lruset::iterator, pair_hash> Lookup;
 	
-	
-	void touch(lruset::iterator);
-	void* evict();
-	void openTempFile();
-	MyDB_PageHandle makePage(string&, long, size_t, void*, bool, bool anonymous = false);
-	
-	long numAnonymous;
+	//pool to recycle anonymous page disk slots
 	queue<long> anonymousPool;
 	
+	//********helper functions section***************
+	//when assigning new page, increase the page count also increase LRUNumber
+	void incrementPageCount(){ ++pageCount; ++LRUNumber;}
+	
+	//check if buffer is filled
+	bool isBufferFilled() {return (nextAvailable - buffer) >= (pageSize*numPages);}
+	
+	//touch a page by its iterator in the set
+	void touch(lruset::iterator);
+	
+	//evict a page and return its buffer slot
+	void* evict();
+	
+	//open the temp file
+	void openTempFile();
+	
+	//make a page object and return its page handle
+	MyDB_PageHandle makePage(string&, long, size_t, void*, bool, bool anonymous = false);
+	
+	//get next disk slot that can be used for anonymous page
 	long getNextAnonymousSlot();
 
 };
