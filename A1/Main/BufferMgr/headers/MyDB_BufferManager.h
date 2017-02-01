@@ -14,6 +14,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <iostream>
+#include <queue>
+
 
 using namespace std;
 
@@ -85,6 +87,8 @@ public:
 	void externTouch(ID key){
 		touch(Lookup[key]);
 	}
+	
+	void returnDiskSlot(long);
 private:
 	char* buffer;
 	size_t pageSize;
@@ -108,10 +112,12 @@ private:
 	void touch(lruset::iterator);
 	void* evict();
 	void openTempFile();
-	MyDB_PageHandle makePage(string&, long, size_t, void*, bool);
+	MyDB_PageHandle makePage(string&, long, size_t, void*, bool, bool anonymous = false);
 	
 	long numAnonymous;
-
+	queue<long> anonymousPool;
+	
+	long getNextAnonymousSlot();
 
 };
 

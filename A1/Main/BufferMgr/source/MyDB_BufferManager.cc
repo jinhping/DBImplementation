@@ -22,7 +22,7 @@ MyDB_PageHandle MyDB_BufferManager :: getPage (MyDB_TablePtr tbptr, long i) {
 }
 
 MyDB_PageHandle MyDB_BufferManager :: getPage () {
-	return makePage(tempFile, ++numAnonymous, pageSize, findNextAvailable(), false);
+	return makePage(tempFile, numAnonymous, pageSize, findNextAvailable(), false, true);
 }
 
 MyDB_PageHandle MyDB_BufferManager :: getPinnedPage (MyDB_TablePtr tbptr, long i) {
@@ -40,7 +40,7 @@ MyDB_PageHandle MyDB_BufferManager :: getPinnedPage (MyDB_TablePtr tbptr, long i
 }
 
 MyDB_PageHandle MyDB_BufferManager :: getPinnedPage () {
-	return makePage(tempFile, ++numAnonymous, pageSize, findNextAvailable(), true);
+	return makePage(tempFile, numAnonymous, pageSize, findNextAvailable(), true, true);
 }
 
 void MyDB_BufferManager :: unpin (MyDB_PageHandle unpinMe) {
@@ -100,9 +100,11 @@ void MyDB_BufferManager :: openTempFile(){
 	this->fd = open(tempFile.c_str(), O_CREAT | O_RDWR | O_SYNC, 0666);
 }
 
-MyDB_PageHandle MyDB_BufferManager :: makePage(string& location, long index, size_t pageSize, void* mem, bool pin){
+MyDB_PageHandle MyDB_BufferManager :: makePage(string& location, long index, size_t pageSize, void* mem, bool pin, bool anonymous){
 	incrementPageCount();
+	if (anonymous) index = getNextAnonymousSlot();
 	auto pagePtr = make_shared<MyDB_Page>(location, index, pageSize, mem, this, pin);
+	if (anonymous) pagePtr->setAnonymous();
 	pagePtr->setLRUNumber(++LRUNumber);
 	auto info = LRU.insert(pagePtr->getPtr());
 	Lookup.insert(make_pair(pagePtr->getKey(), info.first));
@@ -114,6 +116,22 @@ void MyDB_BufferManager :: reEnterLRU(shared_ptr<MyDB_Page> ptr){
 	ptr->setLRUNumber(++LRUNumber);
 	auto info = LRU.insert(ptr);
 	Lookup.insert(make_pair(ptr->getKey(), info.first));
+}
+
+long MyDB_BufferManager :: getNextAnonymousSlot(){
+	long ret = 0;
+	if (!anonymousPool.empty()){
+		ret = anonymousPool.front();
+		anonymousPool.pop();
+	}
+	else{
+		ret = numAnonymous++;
+	}
+	return ret;
+}
+
+void MyDB_BufferManager :: returnDiskSlot(long slot){
+	anonymousPool.push(slot);
 }
 	
 #endif

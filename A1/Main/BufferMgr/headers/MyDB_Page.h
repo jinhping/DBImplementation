@@ -20,7 +20,7 @@ public:
 	
 	MyDB_Page(string& loc, long i, size_t ps, void* mem, MyDB_BufferManager* manager, bool pin);
 	
-	~MyDB_Page(){ dirty = false;};
+	~MyDB_Page();
 	
 	void incrementRef(){
 		++referenceCount;
@@ -58,6 +58,7 @@ public:
 	long getIndex() {return index;}
 	pair<string, long> getKey(){ auto ind = index == -1 ? LRUNumber : index; string temp = *location; return make_pair<string, long>(std::move(temp), std::move(ind));};
 	
+	void setAnonymous() {isAnonymous = true;}
 private:
 	string* location;
 	long index;
@@ -67,7 +68,7 @@ private:
 	unsigned int referenceCount;
 	unsigned int LRUNumber;
 	char* data;
-	
+	bool isAnonymous;
 	void markDirty(){
 		dirty = true;
 	}

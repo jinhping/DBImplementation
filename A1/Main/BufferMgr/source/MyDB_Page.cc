@@ -13,7 +13,13 @@ MyDB_Page::MyDB_Page(string& loc, long i, size_t ps, void* mem, MyDB_BufferManag
 :location(&loc), index(i), pageSize(ps), dirty(false), pinned(pin), referenceCount(0), LRUNumber(0), data((char*)mem){
 	manager = m;
 	freed = false;
+	isAnonymous = false;
 	readPage();
+}
+
+MyDB_Page::~MyDB_Page(){
+	dirty = false;
+	
 }
 
 	
@@ -30,7 +36,7 @@ void MyDB_Page::writeBack(){
 	lseek(file, index*pageSize, SEEK_SET);
 	write(file, data, pageSize);
 	close(file);
-
+	if (isAnonymous) manager->returnDiskSlot(index);
 	dirty = false;
 }
 
@@ -51,7 +57,6 @@ void* MyDB_Page::getBytes(){
 	else{
 		manager->externTouch(this->getKey());
 	}
-	
 	return data;
 }
 
