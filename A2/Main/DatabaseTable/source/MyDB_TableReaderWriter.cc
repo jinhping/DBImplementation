@@ -8,16 +8,18 @@
 
 using namespace std;
 
-MyDB_TableReaderWriter :: MyDB_TableReaderWriter (MyDB_TablePtr, MyDB_BufferManagerPtr) {
+MyDB_TableReaderWriter :: MyDB_TableReaderWriter (MyDB_TablePtr tb, MyDB_BufferManagerPtr bm) {
+	_tbPtr = tb;
+	_bmPtr = bm;
 }
 
-MyDB_PageReaderWriter &MyDB_TableReaderWriter :: operator [] (size_t) {
+MyDB_PageReaderWriter &MyDB_TableReaderWriter :: operator [] (size_t t) {
 	static MyDB_PageReaderWriter temp;
 	return temp;	
 }
 
 MyDB_RecordPtr MyDB_TableReaderWriter :: getEmptyRecord () {
-	return nullptr;
+	return make_shared<MyDB_Record>(_tbPtr->getSchema());
 }
 
 MyDB_PageReaderWriter &MyDB_TableReaderWriter :: last () {
