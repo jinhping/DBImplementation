@@ -7,6 +7,7 @@
 #include "MyDB_Record.h"
 #include "MyDB_RecordIterator.h"
 #include "MyDB_Table.h"
+#include "MyDB_TableRecIterator.h"
 
 // create a smart pointer for the catalog
 using namespace std;
@@ -50,7 +51,8 @@ public:
 private:
 	MyDB_TablePtr _tbPtr;
 	MyDB_BufferManagerPtr _bmPtr;
-	
+	//MyDB_Record _record;
+	size_t _numPages;
 	// ANYTHING YOU NEED HERE
 };
 

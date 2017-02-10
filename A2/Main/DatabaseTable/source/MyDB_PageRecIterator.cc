@@ -1,3 +1,6 @@
+#ifndef PAGE_IT_C
+#define PAGE_IT_C
+
 #include "MyDB_PageRecIterator.h"
 
 MyDB_PageRecIterator :: MyDB_PageRecIterator(MyDB_RecordPtr recptr, MyDB_PageHandle page) : _recptr(recptr), _pagehandle(page){
@@ -15,3 +18,5 @@ void MyDB_PageRecIterator :: getNext() {
 bool MyDB_PageRecIterator :: hasNext() {
 	return (getFirstEmptyRecord(_pagehandle->getBytes()) != currentPos);
 }
+
+#endif

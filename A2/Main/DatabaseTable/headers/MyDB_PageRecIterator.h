@@ -1,3 +1,6 @@
+#ifndef PAGE_IT_H
+#define PAGE_IT_H
+
 #include "MyDB_RecordIterator.h"
 #include "MyDB_Record.h"
 #include "MyDB_PageType.h"
@@ -27,3 +30,6 @@ private:
 	void* getFirstEmptyRecord(void* p) { return (char*)p + getCurrentSize(p); }
 	
 };
+
+
+#endif

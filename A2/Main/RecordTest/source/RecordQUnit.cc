@@ -117,6 +117,8 @@ int main () {
 	 	}
 		QUNIT_IS_EQUAL (counter, 10000);
 	}
+	
+	cout<<"1 test done"<<endl;
 		
 	{
 		// load up the table supplier table from the catalog
@@ -146,6 +148,7 @@ int main () {
 		QUNIT_IS_EQUAL (total, 328350);
 	}
 
+	cout<<"2 test done"<<endl;
 
 	int countOf67thPage = 0;
 	{
@@ -178,6 +181,7 @@ int main () {
 		QUNIT_IS_EQUAL (count, 0);
 	}
 
+	cout<<"3 test done"<<endl;
 	int numCopied = 0;
 	{
 
@@ -212,6 +216,8 @@ int main () {
 		cout << "\n\n\n";
 		
 	}
+	
+	cout<<"4 test done"<<endl;
 
 	{
 
@@ -235,6 +241,8 @@ int main () {
 		QUNIT_IS_EQUAL (counter, numCopied);
 		cout << "\n\n\n";
 	}
+	
+	cout<<"5 test done"<<endl;
 
 }
 
