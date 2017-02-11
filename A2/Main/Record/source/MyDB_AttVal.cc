@@ -24,6 +24,7 @@ string MyDB_IntAttVal :: toString () {
 }
 
 void MyDB_IntAttVal :: fromString (string &fromMe) {
+	//cout << fromMe << endl;
 	value = stoi (fromMe);
 }
 

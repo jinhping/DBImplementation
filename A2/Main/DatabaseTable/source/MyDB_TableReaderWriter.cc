@@ -12,7 +12,6 @@ MyDB_TableReaderWriter :: MyDB_TableReaderWriter (MyDB_TablePtr tb, MyDB_BufferM
 	_tbPtr = tb;
 	_bmPtr = bm;
 	_numPages = 0;
-	//_record(_tbPtr->getSchema());
 }
 
 MyDB_PageReaderWriter &MyDB_TableReaderWriter :: operator [] (size_t t) {
@@ -37,6 +36,7 @@ void MyDB_TableReaderWriter :: append (MyDB_RecordPtr cur) {
 	
 	if (_tbPtr->lastPage() == -1 || !(*this)[_tbPtr->lastPage()].append(cur)){
 		_tbPtr->setLastPage(_numPages++);
+		(this->last()).clear();
 		(this->last()).append(cur);
 	}
 	
@@ -47,11 +47,8 @@ void MyDB_TableReaderWriter :: loadFromTextFile (string s) {
 	std::ifstream infile(s);
 	string line;
 	while(std::getline(infile, line)){
-		//cout<<line<<endl;
-		_rec->fromText(line);
-		//cout<<"add to rec"<<_rec << endl;
+		_rec->fromString(line);
 		this->append(_rec);
-		//cout<<"append"<<endl;
 	}
 	infile.close();
 }

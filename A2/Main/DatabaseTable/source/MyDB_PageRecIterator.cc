@@ -16,7 +16,8 @@ void MyDB_PageRecIterator :: getNext() {
 
 
 bool MyDB_PageRecIterator :: hasNext() {
-	return (getFirstEmptyRecord(_pagehandle->getBytes()) != currentPos);
+	char* begin = (char*)(_pagehandle->getBytes());
+	return ((char*)currentPos - begin < getCurrentSize(begin) );
 }
 
 #endif

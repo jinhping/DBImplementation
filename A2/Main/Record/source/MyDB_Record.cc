@@ -766,10 +766,15 @@ void *MyDB_Record :: fromBinary (void *fromHere) {
 
 void MyDB_Record :: fromString (string res) {	
 	int i = 0;
-        for (int pos = 0; pos < (int) res.size (); pos = (int) res.find ("|", pos + 1) + 1) {
-                string temp = res.substr (pos, res.find ("|", pos + 1) - pos);
+	for (int pos = 0; pos < (int) res.size (); pos = (int) res.find ("|", pos + 1) + 1) {
+		//cout<< "pos: " << pos << endl;
+		string temp = res.substr (pos, res.find ("|", pos + 1) - pos);
+		//cout << "substring: " << temp << endl;
+		//cout << "size: " << values.size() << " i: " << i << endl;
+		//cout << "type: " << typeid((values[i])).name()<<endl;
 		values[i++]->fromString (temp);
-        }
+		//cout << "read attribute " << endl;
+	}
 }
 
 std::ostream& operator<<(std::ostream& os, const MyDB_Record printMe) {

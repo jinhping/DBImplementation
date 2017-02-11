@@ -17,7 +17,7 @@
 |supplier.attList|suppkey#name#address#nationkey#phone#acctbal#comment#|
 |supplier.comment.type|string|
 |supplier.fileName|supplier.bin|
-|supplier.lastPage|-1|
+|supplier.lastPage|1493|
 |supplier.name.type|string|
 |supplier.nationkey.type|int|
 |supplier.phone.type|string|

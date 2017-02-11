@@ -101,7 +101,7 @@ void MyDB_BufferManager :: kickOutPage () {
 }
 
 void MyDB_BufferManager :: killPage (MyDB_Page &killMe) {
-	
+	//cout << "killed page" << endl;
 	// we have no refreences left to him
 	killMe.refCount = -1;
 

@@ -27,6 +27,7 @@ bool MyDB_TableRecIterator :: hasNext() {
 		++_currentPage;
 		MyDB_PageReaderWriter _pr;
 		_pr.setPage(_bmPtr->getPage(_tbPtr, _currentPage));
+		_pr.setPageSize(_bmPtr->getPageSize());
 		_pageIterator = _pr.getIterator(_recPtr);
 	}	
 

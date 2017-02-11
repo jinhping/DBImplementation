@@ -25,9 +25,9 @@ private:
 	void* currentPos;
 	
 	constexpr size_t headerSize() const { return sizeof(MyDB_PageType) + sizeof(size_t);}
-	size_t getCurrentSize(void *p) { return (size_t)(*((char*)p+sizeof(MyDB_PageType))); }
+	size_t getCurrentSize(void *p) const { return *(size_t*)(((char*)p + sizeof(MyDB_PageType))); }
 	void setCurrentSize(void* p, size_t s) { *((size_t*)((char*)p + sizeof(MyDB_PageType))) = s; }
-	void* getFirstEmptyRecord(void* p) { return (char*)p + getCurrentSize(p); }
+	void* getFirstEmptyRecord(void* p) const { return (char*)p + getCurrentSize(p); }
 	
 };
 

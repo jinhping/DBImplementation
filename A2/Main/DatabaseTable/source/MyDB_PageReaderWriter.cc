@@ -3,12 +3,13 @@
 #define PAGE_RW_C
 
 #include "MyDB_PageReaderWriter.h"
+#include <cstring>
 
 void MyDB_PageReaderWriter :: clear () {
-
+	//memset(page_handle->getBytes(), 0, page_size);
 	setType(MyDB_PageType::RegularPage);
 	setCurrentSize(page_handle->getBytes(), headerSize());
-
+	page_handle->wroteBytes();
 }
 
 MyDB_PageType MyDB_PageReaderWriter :: getType () {
@@ -21,7 +22,8 @@ MyDB_RecordIteratorPtr MyDB_PageReaderWriter :: getIterator (MyDB_RecordPtr recP
 }
 
 void MyDB_PageReaderWriter :: setType (MyDB_PageType toMe) {
-	*((MyDB_PageType*)page_handle->getBytes()) = toMe;
+	*((MyDB_PageType*)(page_handle->getBytes())) = toMe;
+	page_handle->wroteBytes();
 }
 
 bool MyDB_PageReaderWriter :: append (MyDB_RecordPtr recPtr) {
@@ -32,6 +34,7 @@ bool MyDB_PageReaderWriter :: append (MyDB_RecordPtr recPtr) {
 	
 	recPtr->toBinary(getFirstEmptyRecord(page));
 	setCurrentSize( page, currentSize + addingSize);
+	page_handle->wroteBytes();
 	
 	return true;
 }

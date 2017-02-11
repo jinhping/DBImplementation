@@ -51,7 +51,6 @@ public:
 private:
 	MyDB_TablePtr _tbPtr;
 	MyDB_BufferManagerPtr _bmPtr;
-	//MyDB_Record _record;
 	size_t _numPages;
 	// ANYTHING YOU NEED HERE
 };
